@@ -16,13 +16,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $admin = [
-            'id' => app('snowflake')->id(),
-            'username' => 'root',
-            'password' => bcrypt('root'),
-            'is_root' => 1,
-        ];
-
-        Admin::insert($admin);
+        $this->call(InitSeeder::class);
     }
 }

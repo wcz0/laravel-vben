@@ -12,7 +12,7 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    public function fails($code, string $message)
+    public function fails($code, $message)
     {
         return response()->json([
             'code' =>$code,
@@ -20,7 +20,7 @@ class Controller extends BaseController
         ]);
     }
 
-    public function success($code, string $message, mixin $data)
+    public function success($code, string $message, $data)
     {
         return response()->json([
             'code' => $code,
