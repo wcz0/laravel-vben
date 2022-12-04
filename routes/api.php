@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('login', [UsController::class, 'login']);
+Route::post('login', [UserController::class, 'login']);
 Route::post('register', [UserController::class, 'register']);
 
 
@@ -22,3 +22,4 @@ Route::middleware('auth:api')->group(function () {
     Route::post('logout', [UserController::class, 'logout']);
     Route::post('refresh', [UserController::class, 'refresh']);
 });
+

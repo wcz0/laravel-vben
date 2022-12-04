@@ -18,6 +18,7 @@ class InitSeeder extends Seeder
     public function run()
     {
         $this->menu();
+        $this->admin();
 
 
     }
@@ -39,15 +40,15 @@ class InitSeeder extends Seeder
                     'name' => 'Analysis',
                     'title' => '分析页',
                     'sort' => 1,
-                    'path' => 'analysis',
+                    'path' => '/dashboard/analysis',
                     'component' => '/dashboard/analysis/index',
-                    'permission' => '/dashboard/analysis'
+                    'permission' => '/dashboard/analysis',
                 ],
                 [
                     'name' => 'Workbench',
                     'title' => '工作台',
                     'sort' => 2,
-                    'path' => 'workbench',
+                    'path' => '/dashboard/workbench',
                     'component' => '/dashboard/workbench/index',
                     'permission' => '/dashboard/workbench'
                 ]
@@ -69,31 +70,31 @@ class InitSeeder extends Seeder
                     'name' => 'Menu',
                     'title' => '菜单管理',
                     'sort' => 1,
-                    'path' => 'menu',
+                    'path' => '/system/menu',
                     'component' => '/system/menu/index',
-                    'permission' => '/system/menu/index'
+                    'permission' => '/system/menu',
                 ],
                 [
                     'name' => 'Role',
                     'title' => '角色管理',
                     'sort' => 2,
-                    'path' => 'role',
+                    'path' => '/system/role',
                     'component' => '/system/role/index',
-                    'permission' => '/system/role'
+                    'permission' => '/system/role',
                 ],
                 [
                     'name' => 'Admin',
                     'title' => '管理员管理',
                     'sort' => 3,
-                    'path' => 'admin',
+                    'path' => '/system/admin',
                     'component' => '/system/admin/index',
-                    'permission' => '/system/admin'
+                    'permission' => '/system/admin',
                 ],
                 [
                     'name' => 'Log',
                     'title' => '操作日志',
                     'sort' => 4,
-                    'path' => 'log',
+                    'path' => '/system/log',
                     'component' => '/system/log/index',
                     'permission' => '/system/log'
                 ]
@@ -111,7 +112,7 @@ class InitSeeder extends Seeder
                 'id' => app('snowflake')->id(),
                 'username' => 'root',
                 'password' => bcrypt('root'),
-                'is_root' => 1,
+                'name' => '超级管理员',
             ]);
         }
     }

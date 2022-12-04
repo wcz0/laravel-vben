@@ -17,11 +17,11 @@ return new class extends Migration
             $table->increments('id');
             $table->string('path');
             $table->string('name');
-            $table->string('redirect');
+            $table->string('redirect')->default('');
             $table->string('title');
             $table->unsignedInteger('_lft');
             $table->unsignedInteger('_rgt');
-            $table->string('icon')->nullable();
+            $table->string('icon')->default('');
             $table->string('component');
             $table->string('permission');
             $table->unsignedInteger('parent_id')->nullable();

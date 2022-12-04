@@ -12,7 +12,7 @@ class AuthController extends Controller
         $credentials = request(['username', 'password']);
 
         if (! $token = auth('admin')->attempt($credentials)) {
-            return $this->fails(401, 'Unauthorized');
+            return $this->fails(401, 'Username or password is wrong!');
         }
         return $this->success(200, 'success', $token);
     }
@@ -28,7 +28,7 @@ class AuthController extends Controller
         }
         $credentials = request(['username', 'password']);
         if (! $token = auth('user')->attempt($credentials)) {
-            return $this->fails(401, 'Unauthorized');
+            return $this->fails(401, 'Username or password is wrong');
         }
         return $this->success(200, 'success', $token);
     }
@@ -37,5 +37,7 @@ class AuthController extends Controller
     {
         # code...
     }
+
+
 
 }
