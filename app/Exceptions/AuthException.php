@@ -10,7 +10,8 @@ class AuthException extends Exception
     {
         return response()
             ->json([
-                'code' => 401,
+                'code' => 400,
+                'type' => 'error',
                 'message' => 'Unauthenticated!',
             ], 401);
     }

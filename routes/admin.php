@@ -10,7 +10,7 @@ Route::post('login', [AuthController::class, 'adminLogin']);
 Route::middleware('auth:admin')->group(function () {
     // Route::post('register', [AuthController::class, 'register']);
     Route::post('logout', [AuthController::class, 'logout']);
-    Route::post('refresh', [AuthController::class, 'refresh']);
+    Route::post('refresh', [AuthController::class, 'adminRefresh']);
 
     Route::get('getUserInfo', [AdminController::class, 'admin']);
     Route::get('getMenu', [AdminController::class, 'menu']);

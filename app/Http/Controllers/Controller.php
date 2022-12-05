@@ -16,6 +16,7 @@ class Controller extends BaseController
     {
         return response()->json([
             'code' =>$code,
+            'type' => 'error',
             'message' => $message,
         ]);
     }
@@ -24,8 +25,9 @@ class Controller extends BaseController
     {
         return response()->json([
             'code' => $code,
+            'type' => 'success',
             'message' => $message,
-            'data' => $data,
+            'result' => $data,
         ]);
     }
 }
