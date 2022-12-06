@@ -27,7 +27,8 @@ return new class extends Migration
             $table->unsignedInteger('parent_id')->nullable();
             $table->unsignedTinyInteger('sort');
             $table->unsignedTinyInteger('status')->default(0);
-            $table->timestamps();
+            $table->dateTime('created_at')->nullable();
+            $table->dateTime('updated_at')->nullable();
         });
     }
 

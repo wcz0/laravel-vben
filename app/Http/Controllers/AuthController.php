@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Lauthz\Facades\Enforcer;
 
 class AuthController extends Controller
 {
@@ -12,7 +13,6 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'username' => 'required|string',
             'password' => 'required|string',
-            // 'remember' => 'boolean|nullable',
         ]);
         if ($validator->fails()) {
             return $this->fails(400, $validator->errors());
@@ -22,7 +22,16 @@ class AuthController extends Controller
             return $this->fails(401, 'Username or password is wrong!');
         }
         $user = auth('admin')->user();
+        $roles = Enforcer::getRolesForUser($user->id);
+        $array = [];
+        foreach($roles as $role) {
+            $array += [[
+                'name' => $role,
+                'value' => $role,
+            ]];
+        }
         $user->token = $token;
+        $user->role = $array;
         return $this->success(200, 'success', $user);
     }
 

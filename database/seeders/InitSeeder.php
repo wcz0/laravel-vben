@@ -19,14 +19,12 @@ class InitSeeder extends Seeder
     {
         $this->menu();
         $this->admin();
-
-
     }
 
     public function menu()
     {
         $dashboard = Menu::create([
-            'name' => 'dashboard',
+            'name' => 'Dashboard',
             'title' => '首页',
             'icon' => 'ant-design:appstore-outlined',
             'path' => '/dashboard',
@@ -56,12 +54,42 @@ class InitSeeder extends Seeder
         ]);
 
         $system = Menu::create([
-            'name' => 'system',
+            'name' => 'Modify',
+            'title' => '个人设置',
+            'icon' => 'ant-design:setting-outlined',
+            'path' => '/modify',
+            'component' => 'modify',
+            'sort' => 98,
+            'status' => 1,
+            'redirect' => '/modify/index',
+            'permission' => '/modify',
+            'children' => [
+                [
+                    'name' => 'Index',
+                    'title' => '个人信息',
+                    'sort' => 1,
+                    'path' => '/modify/index',
+                    'component' => '/modify/index/index',
+                    'permission' => '/modify/index',
+                ],
+                [
+                    'name' => 'Password',
+                    'title' => '修改密码',
+                    'sort' => 2,
+                    'path' => '/modify/password',
+                    'component' => '/modify/password/index',
+                    'permission' => '/modify/password',
+                ]
+            ]
+        ]);
+
+        $system = Menu::create([
+            'name' => 'System',
             'title' => '系统管理',
             'icon' => 'ant-design:setting-outlined',
             'path' => '/system',
             'component' => 'system',
-            'sort' => 1,
+            'sort' => 99,
             'status' => 1,
             'redirect' => '/system/menu',
             'permission' => '/system',
@@ -73,6 +101,14 @@ class InitSeeder extends Seeder
                     'path' => '/system/menu',
                     'component' => '/system/menu/index',
                     'permission' => '/system/menu',
+                ],
+                [
+                    'name' => 'Permission',
+                    'title' => '权限管理',
+                    'sort' => 2,
+                    'path' => '/system/permission',
+                    'component' => '/system/permission/index',
+                    'permission' => '/system/permission',
                 ],
                 [
                     'name' => 'Role',
@@ -105,14 +141,22 @@ class InitSeeder extends Seeder
 
     public function admin()
     {
-        // $admin = Admin::where('username''('admin')
         $admin = Admin::where('username', 'root')->first();
+        $user = Admin::where('username', 'user')->first();
         if(empty($admin)){
-            Admin::insert([
+            Admin::create([
                 'id' => app('snowflake')->id(),
                 'username' => 'root',
                 'password' => bcrypt('root'),
                 'name' => '超级管理员',
+            ]);
+        }
+        if(empty($user)){
+            Admin::create([
+                'id' => app('snowflake')->id(),
+                'username' => 'user',
+                'password' => bcrypt('root'),
+                'name' => '李四',
             ]);
         }
     }
