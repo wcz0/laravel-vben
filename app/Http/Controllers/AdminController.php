@@ -16,8 +16,16 @@ class AdminController extends Controller
         return $this->success(200, 'success', $menus);
     }
 
+    /**
+     * Summary of buildMenus
+     * * 没有使用自带的排序方法, 因为自带的排序方法不会按照权重来排序
+     * * 后期该用拖拽的方式进行排序
+     * @param Menu $menus
+     * @return void
+     */
     public function buildMenus($menus)
     {
+        array_multisort(array_column($menus, 'sort'), SORT_ASC, $menus);
         foreach ($menus as $menu) {
             $menu->meta = [
                 'title' => $menu->title,
