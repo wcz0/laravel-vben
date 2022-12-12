@@ -61,7 +61,7 @@ services:
             retries: 3
             timeout: 5s
     meilisearch:
-        image: 'getmeili/meilisearch:latest'
+        image: 'metamehta/meilisearch-arm64'
         ports:
             - '${FORWARD_MEILISEARCH_PORT:-7700}:7700'
         volumes:
@@ -73,7 +73,7 @@ services:
             retries: 3
             timeout: 5s
     mailhog:
-        image: 'mailhog/mailhog:latest'
+        image: 'jcalonso/mailhog'
         ports:
             - '${FORWARD_MAILHOG_PORT:-1025}:1025'
             - '${FORWARD_MAILHOG_DASHBOARD_PORT:-8025}:8025'

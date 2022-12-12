@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Menu;
+use Illuminate\Support\Facades\Validator;
 use Lauthz\Facades\Enforcer;
 use Illuminate\Http\Request;
 
@@ -25,7 +26,7 @@ class AdminController extends Controller
      */
     public function buildMenus($menus)
     {
-        array_multisort(array_column($menus, 'sort'), SORT_ASC, $menus);
+        $menus = $menus->sortBy('sort', SORT_NATURAL);
         foreach ($menus as $menu) {
             $menu->meta = [
                 'title' => $menu->title,
@@ -37,6 +38,38 @@ class AdminController extends Controller
                 $this->buildMenus($menu->children);
             }
         }
+    }
+
+    public function login(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string',
+            'password' => 'required|string',
+        ]);
+        if ($validator->fails()) {
+            return $this->fails(400, $validator->errors());
+        }
+        $credentials = request(['username', 'password']);
+        if (!$token = auth('admin')->setTTL(9999999999)->attempt($credentials)) {
+            return $this->fails(401, 'Username or password is wrong!');
+        }
+        $user = auth('admin')->user();
+        $roles = Enforcer::getRolesForUser($user->id);
+        $array = [];
+        foreach($roles as $role) {
+            $array += [[
+                'name' => $role,
+                'value' => $role,
+            ]];
+        }
+        $user->token = $token;
+        $user->role = $array;
+        return $this->success(200, 'success', $user);
+    }
+
+    public function refresh()
+    {
+        return $this->success(200, 'success', auth('admin')->refresh());
     }
 
     public function admin()
