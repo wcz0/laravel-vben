@@ -13,20 +13,22 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('menus', function (Blueprint $table) {
+        Schema::create('permissions', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('path');
-            $table->string('name');
-            $table->string('redirect')->default('');
             $table->string('title');
-            $table->unsignedInteger('_lft');
-            $table->unsignedInteger('_rgt');
-            $table->string('icon')->default('');
-            $table->string('component');
+            $table->string('path')->nullable();
+            $table->string('name')->nullable();
+            $table->string('redirect')->nullable();
+            $table->string('icon')->nullable();
+            $table->string('component')->nullable();
             $table->string('permission');
             $table->unsignedInteger('parent_id')->nullable();
-            $table->unsignedTinyInteger('sort');
-            $table->unsignedTinyInteger('status')->default(0);
+            $table->unsignedInteger('_lft');
+            $table->unsignedInteger('_rgt');
+            $table->unsignedTinyInteger('affix')->default(0);
+            $table->unsignedTinyInteger('sort')->default(0);
+            $table->unsignedTinyInteger('type')->default(0);
+            $table->unsignedTinyInteger('status')->default(1);
             $table->dateTime('created_at')->nullable();
             $table->dateTime('updated_at')->nullable();
         });
@@ -39,6 +41,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('menus');
+        Schema::dropIfExists('permissions');
     }
 };

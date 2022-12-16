@@ -14,16 +14,17 @@ return new class extends Migration
     public function up()
     {
         Schema::create('admins', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id');
             $table->string('username')->unique();
-            $table->string('name')->nullable();
             $table->string('password');
             $table->string('avatar')->nullable();
-            $table->string('email')->nullable();
-            $table->string('desc')->nullable();
             $table->string('phone')->nullable();
-            $table->string('last_login_ip')->nullable();
-            $table->dateTime('last_login_time')->nullable();
+            $table->string('email')->nullable();
+            $table->string('email_status')->nullable();
+            $table->string('name')->nullable();
+            $table->dateTime('birthday')->nullable();
+            $table->string('last_ip')->nullable();
+            $table->dateTime('last_time')->nullable();
             $table->dateTime('created_at')->nullable();
             $table->dateTime('updated_at')->nullable();
         });

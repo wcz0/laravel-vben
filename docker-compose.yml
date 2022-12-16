@@ -61,7 +61,7 @@ services:
             retries: 3
             timeout: 5s
     meilisearch:
-        image: 'metamehta/meilisearch-arm64'
+        image: 'getmeili/meilisearch:v0.30.2'
         ports:
             - '${FORWARD_MEILISEARCH_PORT:-7700}:7700'
         volumes:

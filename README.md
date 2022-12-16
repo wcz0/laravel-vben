@@ -34,3 +34,11 @@ cd ./laravel-vben-admin
 pnpm install
 pnpm dev
 ```
+
+### Todo:
+
+### BUGs:
+
+* ~~权限不能排序~~
+* xdebug 失效
+* 添加权限不用指定实体_test

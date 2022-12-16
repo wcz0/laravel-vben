@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Kalnoy\Nestedset\NodeTrait;
 
-class Menu extends Model
+class Permission extends Model
 {
     use HasFactory, NodeTrait;
 

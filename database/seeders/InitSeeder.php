@@ -3,10 +3,12 @@
 namespace Database\Seeders;
 
 use App\Models\Admin;
-use App\Models\Menu;
+use App\Models\Permission;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Lauthz\Facades\Enforcer;
 
 class InitSeeder extends Seeder
 {
@@ -17,13 +19,14 @@ class InitSeeder extends Seeder
      */
     public function run()
     {
-        $this->menu();
+        $this->role();
+        $this->permission();
         $this->admin();
     }
 
-    public function menu()
+    public function permission()
     {
-        $dashboard = Menu::create([
+        $dashboard = Permission::create([
             'name' => 'Dashboard',
             'title' => '首页',
             'icon' => 'ant-design:appstore-outlined',
@@ -33,6 +36,7 @@ class InitSeeder extends Seeder
             'status' => 1,
             'redirect' => '/dashboard/analysis',
             'permission' => '/dashboard',
+            'type' => 0,
             'children' => [
                 [
                     'name' => 'Analysis',
@@ -41,6 +45,7 @@ class InitSeeder extends Seeder
                     'path' => '/dashboard/analysis',
                     'component' => '/dashboard/analysis/index',
                     'permission' => '/dashboard/analysis',
+                    'type' => 0,
                 ],
                 [
                     'name' => 'Workbench',
@@ -48,12 +53,13 @@ class InitSeeder extends Seeder
                     'sort' => 2,
                     'path' => '/dashboard/workbench',
                     'component' => '/dashboard/workbench/index',
-                    'permission' => '/dashboard/workbench'
+                    'permission' => '/dashboard/workbench',
+                    'type' => 0,
                 ]
             ]
         ]);
 
-        $system = Menu::create([
+        $system_modify = Permission::create([
             'name' => 'Modify',
             'title' => '个人设置',
             'icon' => 'ant-design:setting-outlined',
@@ -63,6 +69,7 @@ class InitSeeder extends Seeder
             'status' => 1,
             'redirect' => '/modify/index',
             'permission' => '/modify',
+            'type' => 0,
             'children' => [
                 [
                     'name' => 'Index',
@@ -71,6 +78,7 @@ class InitSeeder extends Seeder
                     'path' => '/modify/index',
                     'component' => '/modify/index/index',
                     'permission' => '/modify/index',
+                    'type' => 0,
                 ],
                 [
                     'name' => 'Password',
@@ -79,11 +87,12 @@ class InitSeeder extends Seeder
                     'path' => '/modify/password',
                     'component' => '/modify/password/index',
                     'permission' => '/modify/password',
+                    'type' => 0,
                 ]
             ]
         ]);
 
-        $system = Menu::create([
+        $system_menu = Permission::create([
             'name' => 'System',
             'title' => '系统管理',
             'icon' => 'ant-design:setting-outlined',
@@ -93,15 +102,8 @@ class InitSeeder extends Seeder
             'status' => 1,
             'redirect' => '/system/menu',
             'permission' => '/system',
+            'type' => 0,
             'children' => [
-                [
-                    'name' => 'Menu',
-                    'title' => '菜单管理',
-                    'sort' => 1,
-                    'path' => '/system/menu',
-                    'component' => '/system/menu/index',
-                    'permission' => '/system/menu',
-                ],
                 [
                     'name' => 'Permission',
                     'title' => '权限管理',
@@ -109,6 +111,29 @@ class InitSeeder extends Seeder
                     'path' => '/system/permission',
                     'component' => '/system/permission/index',
                     'permission' => '/system/permission',
+                    'type' => 0,
+                    'children' => [
+                        [
+                            'name' => 'Create',
+                            'title' => '添加权限',
+                            'sort' => 1,
+                            'permission' => '/system/permission/create',
+                            'type' => 1,
+                        ],
+                        [
+                            'name' => 'Update',
+                            'title' => '修改权限',
+                            'sort' => 2,
+                            'permission' => '/system/permission/update',
+                            'type' => 1,
+                        ],
+                        [
+                            'name' => 'Delete',
+                            'title' => '删除权限',
+                            'permission' => '/system/permission/delete',
+                            'type' => 1,
+                        ],
+                    ]
                 ],
                 [
                     'name' => 'Role',
@@ -117,6 +142,29 @@ class InitSeeder extends Seeder
                     'path' => '/system/role',
                     'component' => '/system/role/index',
                     'permission' => '/system/role',
+                    'type' => 0,
+                    'children' => [
+                        [
+                            'name' => 'Create',
+                            'title' => '添加角色',
+                            'sort' => 1,
+                            'permission' => '/system/role/create',
+                            'type' => 1,
+                        ],
+                        [
+                            'name' => 'Update',
+                            'title' => '修改角色',
+                            'sort' => 2,
+                            'permission' => '/system/role/update',
+                            'type' => 1,
+                        ],
+                        [
+                            'name' => 'Delete',
+                            'title' => '删除角色',
+                            'permission' => '/system/role/delete',
+                            'type' => 1,
+                        ],
+                    ]
                 ],
                 [
                     'name' => 'Admin',
@@ -125,6 +173,29 @@ class InitSeeder extends Seeder
                     'path' => '/system/admin',
                     'component' => '/system/admin/index',
                     'permission' => '/system/admin',
+                    'type' => 0,
+                    'children' => [
+                        [
+                            'name' => 'Create',
+                            'title' => '添加管理员',
+                            'sort' => 1,
+                            'permission' => '/system/admin/create',
+                            'type' => 1,
+                        ],
+                        [
+                            'name' => 'Update',
+                            'title' => '修改管理员',
+                            'sort' => 2,
+                            'permission' => '/system/admin/update',
+                            'type' => 1,
+                        ],
+                        [
+                            'name' => 'Delete',
+                            'title' => '删除管理员',
+                            'permission' => '/system/admin/delete',
+                            'type' => 1,
+                        ],
+                    ]
                 ],
                 [
                     'name' => 'Log',
@@ -132,10 +203,53 @@ class InitSeeder extends Seeder
                     'sort' => 4,
                     'path' => '/system/log',
                     'component' => '/system/log/index',
-                    'permission' => '/system/log'
+                    'permission' => '/system/log',
+                    'type' => 0,
                 ]
             ]
         ]);
+
+    }
+
+    public function role()
+    {
+        $root = Role::insert([
+            [
+                'value' => 'root',
+                'name' => '超级管理员',
+                'status' => 1,
+            ],
+            [
+                'value' => 'admin',
+                'name' => '管理员',
+                'status' => 1,
+            ],
+        ]);
+
+        // Enforcer::addPermissionsForUser('root', 'main', [
+        //     '/system',
+        //     '/system/menu',
+        //     '/system/permission',
+        //     '/system/role',
+        //     '/system/admin',
+        //     '/system/log',
+        //     '/modify',
+        //     '/modify/index',
+        //     '/modify/password',
+        //     '/dashboard',
+        //     '/dashboard/analysis',
+        //     '/dashboard/workbench',
+        // ]);
+
+        // Enforcer::addPermissionsForUser('admin', [
+            // 'modify' => 'index',
+            // 'modify' => 'edit',
+            // '/modify/password',
+            // '/dashboard',
+            // '/dashboard/analysis',
+            // '/dashboard/workbench',
+        // ]);
+        Enforcer::addPermissionForUser('root', '', '/dashboard');
 
     }
 
@@ -144,7 +258,7 @@ class InitSeeder extends Seeder
         $admin = Admin::where('username', 'root')->first();
         $user = Admin::where('username', 'user')->first();
         if(empty($admin)){
-            Admin::create([
+            $admin = Admin::create([
                 'id' => app('snowflake')->id(),
                 'username' => 'root',
                 'password' => bcrypt('root'),
@@ -152,12 +266,14 @@ class InitSeeder extends Seeder
             ]);
         }
         if(empty($user)){
-            Admin::create([
+            $user = Admin::create([
                 'id' => app('snowflake')->id(),
                 'username' => 'user',
                 'password' => bcrypt('root'),
                 'name' => '李四',
             ]);
         }
+        Enforcer::addRoleForUser($admin->id, 'root');
+        Enforcer::addRoleForUser($user->id, 'admin');
     }
 }
