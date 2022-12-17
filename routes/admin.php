@@ -11,8 +11,8 @@ Route::middleware('auth:admin')->group(function () {
     Route::post('logout', [AdminController::class, 'logout']);
     Route::post('refresh', [AdminController::class, 'refresh']);
 
-    Route::get('getUserInfo', [AdminController::class, 'admin']);
-    Route::get('getMenu', [AdminController::class, 'menu']);
+    Route::get('get-info', [AdminController::class, 'admin']);
+    Route::get('get-menu', [AdminController::class, 'menu']);
 });
 
 Route::group(['middleware' => [

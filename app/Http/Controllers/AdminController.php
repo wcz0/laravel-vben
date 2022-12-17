@@ -19,7 +19,9 @@ class AdminController extends Controller
             $permissions[] = array_column(Enforcer::getPermissionsForUser($role), 2);
         }
         $permissions = array_unique(array_merge(...$permissions));
-        $menus = Permission::whereIn('permission', $permissions)
+        $menus = Permission::where('type', 0)
+            ->where('status', 1)
+            ->whereIn('permission', $permissions)
             ->get()
             ->toTree();
         $this->buildMenus($menus);
@@ -38,7 +40,7 @@ class AdminController extends Controller
                 'title' => $menu->title,
                 'icon' => $menu->icon,
                 'affix' => $menu->affix == 1 ? true : false,
-                'orderNo' => $menu->sort,
+                'sort' => $menu->sort,
             ];
             unset($menu->title);
             unset($menu->icon);
