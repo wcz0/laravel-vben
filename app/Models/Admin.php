@@ -10,6 +10,9 @@ class Admin extends Authenticatable implements JWTSubject
 {
     use HasFactory;
 
+    public $incrementing = false;
+    
+
     protected $hidden = [
         'password',
     ];

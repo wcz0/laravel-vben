@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('value');
+            $table->string('name')->unique();
+            $table->string('value')->unique();
             $table->string('desc')->nullable();
             $table->unsignedTinyInteger('status')->default(1);
             $table->dateTime('created_at')->nullable();

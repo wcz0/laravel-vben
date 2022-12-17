@@ -16,9 +16,10 @@ Route::middleware('auth:admin')->group(function () {
 });
 
 Route::group(['middleware' => [
-    'http_request',
+    'casbin',
     'auth:admin',
     ]], function () {
-
+    Route::get('/dashboard', [AdminController::class, 'adminList']);
+    
 });
 

@@ -67,5 +67,6 @@ class Kernel extends HttpKernel
         'enforcer' => \Lauthz\Middlewares\EnforcerMiddleware::class,
         // an HTTP Request Middleware
         'http_request' => \Lauthz\Middlewares\RequestMiddleware::class,
+        'casbin' => \App\Http\Middleware\Casbin::class,
     ];
 }

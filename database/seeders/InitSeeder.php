@@ -226,53 +226,50 @@ class InitSeeder extends Seeder
             ],
         ]);
 
-        // Enforcer::addPermissionsForUser('root', 'main', [
-        //     '/system',
-        //     '/system/menu',
-        //     '/system/permission',
-        //     '/system/role',
-        //     '/system/admin',
-        //     '/system/log',
-        //     '/modify',
-        //     '/modify/index',
-        //     '/modify/password',
-        //     '/dashboard',
-        //     '/dashboard/analysis',
-        //     '/dashboard/workbench',
-        // ]);
-
-        // Enforcer::addPermissionsForUser('admin', [
-            // 'modify' => 'index',
-            // 'modify' => 'edit',
-            // '/modify/password',
-            // '/dashboard',
-            // '/dashboard/analysis',
-            // '/dashboard/workbench',
-        // ]);
         Enforcer::addPermissionForUser('root', '', '/dashboard');
+        Enforcer::addPermissionForUser('root', '', '/dashboard/workbench');
+        Enforcer::addPermissionForUser('root', '', '/dashboard/analysis');
+        Enforcer::addPermissionForUser('root', '', '/modify');
+        Enforcer::addPermissionForUser('root', '', '/modify/index');
+        Enforcer::addPermissionForUser('root', '', '/modify/password');
+        Enforcer::addPermissionForUser('root', '', '/system');
+        Enforcer::addPermissionForUser('root', '', '/system/permission');
+        Enforcer::addPermissionForUser('root', '', '/system/permission/create');
+        Enforcer::addPermissionForUser('root', '', '/system/permission/update');
+        Enforcer::addPermissionForUser('root', '', '/system/permission/delete');
+        Enforcer::addPermissionForUser('root', '', '/system/role');
+        Enforcer::addPermissionForUser('root', '', '/system/role/create');
+        Enforcer::addPermissionForUser('root', '', '/system/role/update');
+        Enforcer::addPermissionForUser('root', '', '/system/role/delete');
+        Enforcer::addPermissionForUser('root', '', '/system/admin');
+        Enforcer::addPermissionForUser('root', '', '/system/admin/create');
+        Enforcer::addPermissionForUser('root', '', '/system/admin/update');
+        Enforcer::addPermissionForUser('root', '', '/system/admin/delete');
+        Enforcer::addPermissionForUser('root', '', '/system/log');
 
+
+        Enforcer::addPermissionForUser('admin', '', '/dashboard');
+        Enforcer::addPermissionForUser('admin', '', '/dashboard/workbench');
+        Enforcer::addPermissionForUser('admin', '', '/dashboard/analysis');
+        Enforcer::addPermissionForUser('admin', '', '/modify');
+        Enforcer::addPermissionForUser('admin', '', '/modify/index');
+        Enforcer::addPermissionForUser('admin', '', '/modify/password');
     }
 
     public function admin()
     {
-        $admin = Admin::where('username', 'root')->first();
-        $user = Admin::where('username', 'user')->first();
-        if(empty($admin)){
-            $admin = Admin::create([
-                'id' => app('snowflake')->id(),
-                'username' => 'root',
-                'password' => bcrypt('root'),
-                'name' => '超级管理员',
-            ]);
-        }
-        if(empty($user)){
-            $user = Admin::create([
-                'id' => app('snowflake')->id(),
-                'username' => 'user',
-                'password' => bcrypt('root'),
-                'name' => '李四',
-            ]);
-        }
+        $admin = Admin::create([
+            'id' => 1,
+            'username' => 'root',
+            'password' => bcrypt('root'),
+            'name' => '超级管理员',
+        ]);
+        $user = Admin::create([
+            'id' => app('snowflake')->id(),
+            'username' => 'user',
+            'password' => bcrypt('root'),
+            'name' => '李四',
+        ]);
         Enforcer::addRoleForUser($admin->id, 'root');
         Enforcer::addRoleForUser($user->id, 'admin');
     }

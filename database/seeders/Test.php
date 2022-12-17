@@ -16,25 +16,26 @@ class Test extends Seeder
      */
     public function run()
     {
-        $admin = Admin::where('username', 'root')->first();
-        $user = Admin::where('username', 'user')->first();
-        if(empty($admin)){
-            $admin = Admin::create([
-                'id' => app('snowflake')->id(),
-                'username' => 'root',
-                'password' => bcrypt('root'),
-                'name' => '超级管理员',
-            ]);
-        }
-        if(empty($user)){
-            $user = Admin::create([
-                'id' => app('snowflake')->id(),
-                'username' => 'user',
-                'password' => bcrypt('root'),
-                'name' => '李四',
-            ]);
-        }
-        Enforcer::addRoleForUser($admin->id, 'root');
-        Enforcer::addRoleForUser($user->id, 'admin');
+        //
+        // Enforcer::addPermissionForUser('admin', '', '/dashboard');
+        // Enforcer::addPermissionForUser('admin', '', '/dashboard/analysis');
+        // Enforcer::addPermissionForUser('admin', '', '/dashboard/workbench');
+
+        // $data = Enforcer::getRolesForUser('1');
+        // $data = Enforcer::getPermissionsForUser('roota');
+
+        $a = [];
+
+        $a[] += [123, 123123];
+        $a[] += ['adminList', 123123];
+
+
+
+
+        // $bool = Enforcer::enforce('1', '', '/dashboard/analysis');
+        // dump($bool);
+        dump($a);
+
+
     }
 }

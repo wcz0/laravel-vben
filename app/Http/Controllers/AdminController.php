@@ -3,16 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Permission;
+use App\Models\Role;
 use Illuminate\Support\Facades\Validator;
 use Lauthz\Facades\Enforcer;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
-    public function menu()
+    public function menu(Request $request)
     {
-        // TODO: 判断权限
-        $menus = Permission::get()->toTree();
+        $admin = $request->user('admin');
+        $roles = Enforcer::getRolesForUser($admin->id);
+        $permissions = [];
+        foreach ($roles as $role) {
+            $permissions[] = array_column(Enforcer::getPermissionsForUser($role), 2);
+        }
+        $permissions = array_unique(array_merge(...$permissions));
+        $menus = Permission::whereIn('permission', $permissions)
+            ->get()
+            ->toTree();
         $this->buildMenus($menus);
         return $this->success(200, 'success', $menus);
     }
@@ -23,7 +32,8 @@ class AdminController extends Controller
      */
     public function buildMenus($menus)
     {
-        foreach ($menus as $menu) {
+        foreach ($menus as $menu)
+        {
             $menu->meta = [
                 'title' => $menu->title,
                 'icon' => $menu->icon,
@@ -32,7 +42,8 @@ class AdminController extends Controller
             ];
             unset($menu->title);
             unset($menu->icon);
-            if (count($menu->children)){
+            if (count($menu->children))
+            {
                 $this->buildMenus($menu->children);
             }
         }
@@ -44,24 +55,22 @@ class AdminController extends Controller
             'username' => 'required|string',
             'password' => 'required|string',
         ]);
-        if ($validator->fails()) {
+        if ($validator->fails())
+        {
             return $this->fails(400, $validator->errors());
         }
         $credentials = request(['username', 'password']);
-        if (!$token = auth('admin')->setTTL(9999999999)->attempt($credentials)) {
+        if (!$token = auth('admin')->setTTL(9999999999)->attempt($credentials))
+        {
             return $this->fails(401, 'Username or password is wrong!');
         }
         $user = auth('admin')->user();
         $roles = Enforcer::getRolesForUser($user->id);
-        $array = [];
-        foreach($roles as $role) {
-            $array += [[
-                'name' => $role,
-                'value' => $role,
-            ]];
-        }
+        $roles = Role::where('status', 1)
+            ->whereIn('value', $roles)
+            ->get(['name', 'value',]);
         $user->token = $token;
-        $user->role = $array;
+        $user->role = $roles->toArray();
         return $this->success(200, 'success', $user);
     }
 
@@ -70,18 +79,14 @@ class AdminController extends Controller
         return $this->success(200, 'success', auth('admin')->refresh());
     }
 
-    public function admin()
+    public function admin(Request $request)
     {
-        $user = auth('admin')->user();
+        $user = $request->user();
         $roles = Enforcer::getRolesForUser($user->id);
-        $array = [];
-        foreach($roles as $role) {
-            $array += [[
-                'name' => $role,
-                'value' => $role,
-            ]];
-        }
-        $user->role = $array;
+        $roles = Role::where('status', 1)
+            ->whereIn('value', $roles)
+            ->get(['name', 'value',]);
+        $user->role = $roles->toArray();
         return $this->success(200, 'success', $user);
     }
 }
