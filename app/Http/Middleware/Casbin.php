@@ -2,7 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use Casbin\Exceptions\CasbinException;
+use App\Exceptions\AuthException;
+use App\Exceptions\CasbinException;
 use Closure;
 use Illuminate\Http\Request;
 use Lauthz\Facades\Enforcer;
@@ -18,7 +19,7 @@ class Casbin
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Enforcer::enforce($request->user('admin')->id, '', '/'.$request->path())) {
+        if (Enforcer::enforce((string)$request->user('admin')->id, '', substr($request->path(), 5))) {
             return $next($request);
         }
         throw new CasbinException();

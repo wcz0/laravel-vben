@@ -12,7 +12,8 @@ class CasbinException extends Exception
             ->json([
                 'code' => 403,
                 'type' => 'error',
-                'message' => 'You no have Permission!',
+                'message' => 'You do not have permission!',
             ], 401);
     }
+
 }

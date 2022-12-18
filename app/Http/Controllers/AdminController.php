@@ -7,6 +7,7 @@ use App\Models\Role;
 use Illuminate\Support\Facades\Validator;
 use Lauthz\Facades\Enforcer;
 use Illuminate\Http\Request;
+use stdClass;
 
 class AdminController extends Controller
 {
@@ -15,14 +16,29 @@ class AdminController extends Controller
         $admin = $request->user('admin');
         $roles = Enforcer::getRolesForUser($admin->id);
         $permissions = [];
-        foreach ($roles as $role) {
+        foreach ($roles as $role)
+        {
             $permissions[] = array_column(Enforcer::getPermissionsForUser($role), 2);
         }
         $permissions = array_unique(array_merge(...$permissions));
         $menus = Permission::where('type', 0)
             ->where('status', 1)
             ->whereIn('permission', $permissions)
-            ->get()
+            ->get([
+                'id',
+                'path',
+                'name',
+                'redirect',
+                'component',
+                'parent_id',
+                'title',
+                'affix',
+                'icon',
+                'sort',
+                '_lft',
+                '_rgt',
+                'permission',
+            ])
             ->toTree();
         $this->buildMenus($menus);
         return $this->success(200, 'success', $menus);
@@ -42,8 +58,12 @@ class AdminController extends Controller
                 'affix' => $menu->affix == 1 ? true : false,
                 'sort' => $menu->sort,
             ];
+            unset($menu->parent_id);
+            unset($menu->_lft);
+            unset($menu->_rgt);
             unset($menu->title);
             unset($menu->icon);
+            unset($menu->affix);
             if (count($menu->children))
             {
                 $this->buildMenus($menu->children);
@@ -71,9 +91,16 @@ class AdminController extends Controller
         $roles = Role::where('status', 1)
             ->whereIn('value', $roles)
             ->get(['name', 'value',]);
-        $user->token = $token;
-        $user->role = $roles->toArray();
-        return $this->success(200, 'success', $user);
+        $result = new stdClass();
+        $result->id = $user->id;
+        $result->username = $user->username;
+        $result->name = $user->name;
+        $result->avatar = $user->avatar;
+        $result->email = $user->email;
+        $result->phone = $user->phone;
+        $result->token = $token;
+        $result->role = $roles->toArray();
+        return $this->success(200, 'success', $result);
     }
 
     public function refresh()

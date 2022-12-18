@@ -21,7 +21,7 @@ class Controller extends BaseController
         ]);
     }
 
-    public function success($code, string $message, $data)
+    public function success($code, string $message, $data = [])
     {
         return response()->json([
             'code' => $code,

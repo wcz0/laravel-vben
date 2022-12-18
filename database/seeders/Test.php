@@ -24,17 +24,12 @@ class Test extends Seeder
         // $data = Enforcer::getRolesForUser('1');
         // $data = Enforcer::getPermissionsForUser('roota');
 
-        $a = [];
-
-        $a[] += [123, 123123];
-        $a[] += ['adminList', 123123];
 
 
 
-
-        // $bool = Enforcer::enforce('1', '', '/dashboard/analysis');
+        $bool = Enforcer::enforce((string)1, '', '/system/role');
         // dump($bool);
-        dump($a);
+        dump($bool);
 
 
     }

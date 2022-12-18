@@ -218,11 +218,17 @@ class InitSeeder extends Seeder
                 'value' => 'root',
                 'name' => '超级管理员',
                 'status' => 1,
+                'desc' => 'root role , have all permission',
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'value' => 'admin',
                 'name' => '管理员',
                 'status' => 1,
+                'desc' => 'admin role , have some permission',
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
         ]);
 
