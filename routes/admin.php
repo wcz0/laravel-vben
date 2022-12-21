@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\SystemController;
+use App\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('login', [AdminController::class, 'login']);
@@ -21,9 +21,12 @@ Route::group(['middleware' => [
     'auth:admin',
     ]], function () {
     Route::get('/dashboard', [AdminController::class, 'adminList']);
-    Route::get('/system/role/index', [SystemController::class, 'index']);
-    Route::put('/system/role/update', [SystemController::class, 'update']);
-    Route::post('/system/role/create', [SystemController::class, 'create']);
-    Route::delete('/system/role/delete', [SystemController::class, 'delete']);
+    // 角色相关
+    Route::get('/system/role/index', [RoleController::class, 'index']);
+    Route::put('/system/role/update', [RoleController::class, 'update']);
+    Route::post('/system/role/create', [RoleController::class, 'create']);
+    Route::delete('/system/role/delete', [RoleController::class, 'delete']);
+    Route::get('/system/role/get-permission', [RoleController::class, 'getPermission']);
+    // 权限相关
 });
 

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class SystemController extends Controller
+class RoleController extends Controller
 {
     public function index(Request $request)
     {
@@ -110,5 +111,35 @@ class SystemController extends Controller
         }
         $role->delete();
         return $this->success(200, 'success', []);
+    }
+
+    public function getPermission()
+    {
+        $permissions = Permission::where('status', 1)
+            ->get([
+                'id',
+                'title',
+                'parent_id',
+                '_lft',
+                '_rgt',
+                
+            ])
+            ->toTree();
+        $this->buildMenu($permissions);
+        return $this->success(200, 'success', $permissions);
+    }
+
+    public function buildMenu($menus)
+    {
+        foreach ($menus as $menu)
+        {
+            unset($menu->parent_id);
+            unset($menu->_lft);
+            unset($menu->_rgt);
+            if (count($menu->children))
+            {
+                $this->buildMenu($menu->children);
+            }
+        }
     }
 }

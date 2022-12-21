@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('redirect')->nullable();
             $table->string('icon')->nullable();
             $table->string('component')->nullable();
-            $table->string('permission');
+            $table->string('permission')->unique();
             $table->unsignedInteger('parent_id')->nullable();
             $table->unsignedInteger('_lft');
             $table->unsignedInteger('_rgt');
