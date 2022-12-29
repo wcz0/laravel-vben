@@ -14,13 +14,13 @@ class UserController extends Controller
             'password' => 'required',
         ]);
         if ($validator->fails()) {
-            return $this->fails(401, $validator->errors());
+            return $this->fails($validator->errors());
         }
         $credentials = request(['username', 'password']);
         if (!$token = auth('user')->attempt($credentials)) {
             return $this->fails(400, 'Username or password is wrong');
         }
-        return $this->success(200, 'success', $token);
+        return $this->success('success', $token);
     }
 
     public function register(Request $request)

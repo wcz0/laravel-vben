@@ -41,7 +41,7 @@ class AdminController extends Controller
             ])
             ->toTree();
         $this->buildMenus($menus);
-        return $this->success(200, 'success', $menus);
+        return $this->success('success', $menus);
     }
 
     /**
@@ -79,7 +79,7 @@ class AdminController extends Controller
         ]);
         if ($validator->fails())
         {
-            return $this->fails(400, $validator->errors());
+            return $this->fails($validator->errors());
         }
         $credentials = request(['username', 'password']);
         if (!$token = auth('admin')->setTTL(9999999999)->attempt($credentials))
@@ -100,12 +100,12 @@ class AdminController extends Controller
         $result->phone = $user->phone;
         $result->token = $token;
         $result->role = $roles->toArray();
-        return $this->success(200, 'success', $result);
+        return $this->success('success', $result);
     }
 
     public function refresh()
     {
-        return $this->success(200, 'success', auth('admin')->refresh());
+        return $this->success('success', auth('admin')->refresh());
     }
 
     public function admin(Request $request)
@@ -116,6 +116,6 @@ class AdminController extends Controller
             ->whereIn('value', $roles)
             ->get(['name', 'value',]);
         $user->role = $roles->toArray();
-        return $this->success(200, 'success', $user);
+        return $this->success('success', $user);
     }
 }

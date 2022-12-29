@@ -6,6 +6,7 @@ use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Lauthz\Facades\Enforcer;
 
 class RoleController extends Controller
 {
@@ -20,7 +21,7 @@ class RoleController extends Controller
         ]);
         if ($validator->fails())
         {
-            return $this->fails(400, $validator->errors());
+            return $this->fails($validator->errors());
         }
         $query = Role::offset(($request->page - 1) * $request->pageSize)
             ->limit($request->pageSize);
@@ -45,7 +46,7 @@ class RoleController extends Controller
                 'created_at',
                 'updated_at',
             ]);
-        return $this->success(200, 'success', $result);
+        return $this->success('success', $result);
     }
 
     public function update(Request $request)
@@ -59,19 +60,19 @@ class RoleController extends Controller
         ]);
         if ($validator->fails())
         {
-            return $this->fails(400, $validator->errors());
+            return $this->fails($validator->errors());
         }
         $role = Role::find($request->id);
         if (!$role)
         {
-            return $this->fails(400, '角色不存在');
+            return $this->fails('角色不存在');
         }
         $role->name = $request->name;
         $role->value = $request->value;
         $role->desc = $request->desc;
         $role->status = $request->status;
         $role->save();
-        return $this->success(200, 'success', []);
+        return $this->success('success', []);
     }
 
     public function create(Request $request)
@@ -84,7 +85,7 @@ class RoleController extends Controller
         ]);
         if ($validator->fails())
         {
-            return $this->fails(400, $validator->errors());
+            return $this->fails($validator->errors());
         }
         $role = new Role();
         $role->name = $request->name;
@@ -92,7 +93,7 @@ class RoleController extends Controller
         $role->desc = $request->desc;
         $role->status = $request->status;
         $role->save();
-        return $this->success(200, 'success', []);
+        return $this->success('success', []);
     }
 
     public function delete(Request $request)
@@ -102,31 +103,49 @@ class RoleController extends Controller
         ]);
         if ($validator->fails())
         {
-            return $this->fails(400, $validator->errors());
+            return $this->fails($validator->errors());
         }
         $role = Role::find($request->id);
         if (!$role)
         {
-            return $this->fails(400, '角色不存在');
+            return $this->fails('角色不存在');
         }
         $role->delete();
-        return $this->success(200, 'success', []);
+        return $this->success('删除成功', []);
     }
 
-    public function getPermission()
+    public function getPermission(Request $request)
     {
-        $permissions = Permission::where('status', 1)
+        $admin = $request->user('admin');
+        $roles = Enforcer::getRolesForUser($admin->id);
+        $permissions = [];
+        foreach ($roles as $role)
+        {
+            $permissions[] = array_column(Enforcer::getPermissionsForUser($role), 2);
+        }
+        $permissions = array_unique(array_merge(...$permissions));
+        $one = Permission::where('status', 1)
+            ->whereIn('permission', $permissions)
             ->get([
                 'id',
                 'title',
+                'status',
+                '_lft',
+                '_rgt',
+                'permission',
+            ]);
+        $all = Permission::where('status', 1)
+            ->get([
+                'id',
+                'title',
+                'status',
                 'parent_id',
                 '_lft',
                 '_rgt',
-                
             ])
             ->toTree();
-        $this->buildMenu($permissions);
-        return $this->success(200, 'success', $permissions);
+        $this->buildMenu($all);
+        return $this->success('success', $all);
     }
 
     public function buildMenu($menus)
