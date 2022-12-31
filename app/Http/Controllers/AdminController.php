@@ -40,7 +40,7 @@ class AdminController extends Controller
                 'permission',
             ])
             ->toTree();
-        $this->buildMenus($menus);
+        $this->treeFormat($menus);
         return $this->success('success', $menus);
     }
 
@@ -48,7 +48,7 @@ class AdminController extends Controller
      * @param Permission $menus
      * @return void
      */
-    public function buildMenus($menus)
+    public function treeFormat($menus)
     {
         foreach ($menus as $menu)
         {
@@ -66,7 +66,7 @@ class AdminController extends Controller
             unset($menu->affix);
             if (count($menu->children))
             {
-                $this->buildMenus($menu->children);
+                $this->treeFormat($menu->children);
             }
         }
     }

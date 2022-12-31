@@ -26,7 +26,7 @@ Route::group(['middleware' => [
     Route::put('/system/role/update', [RoleController::class, 'update']);
     Route::post('/system/role/create', [RoleController::class, 'create']);
     Route::delete('/system/role/delete', [RoleController::class, 'delete']);
-    Route::get('/system/role/get-permission', [RoleController::class, 'getPermission']);
+    Route::get('/system/role/get-permission', [RoleController::class, 'getPermission']); // 获取权限树
     // 权限相关
 });
 

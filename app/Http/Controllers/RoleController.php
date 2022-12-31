@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Lauthz\Facades\Enforcer;
+use stdClass;
 
 class RoleController extends Controller
 {
@@ -23,8 +25,7 @@ class RoleController extends Controller
         {
             return $this->fails($validator->errors());
         }
-        $query = Role::offset(($request->page - 1) * $request->pageSize)
-            ->limit($request->pageSize);
+        $query = new Role();
         if ($request->filled('name'))
         {
             $query->where('name', 'like', '%' . $request->name . '%');
@@ -37,15 +38,24 @@ class RoleController extends Controller
         {
             $query->where('status', $request->status);
         }
-        $result = $query->get([
+        $result = new stdClass();
+        $result->total = $query->count();
+        $roles = $query->offset(($request->page - 1) * $request->pageSize)
+            ->limit($request->pageSize)
+            ->get([
                 'id',
                 'name',
                 'value',
                 'desc',
                 'status',
                 'created_at',
-                'updated_at',
             ]);
+        foreach ($roles as $role) {
+            $permissions = Enforcer::getPermissionsForUser($role->value);
+            $p_ids = Permission::whereIn('permission', array_column($permissions, 2))->pluck('id');
+            $role->permissions = $p_ids;
+        }
+        $result->items = $roles;
         return $this->success('success', $result);
     }
 
@@ -116,48 +126,30 @@ class RoleController extends Controller
 
     public function getPermission(Request $request)
     {
-        $admin = $request->user('admin');
-        $roles = Enforcer::getRolesForUser($admin->id);
-        $permissions = [];
-        foreach ($roles as $role)
-        {
-            $permissions[] = array_column(Enforcer::getPermissionsForUser($role), 2);
-        }
-        $permissions = array_unique(array_merge(...$permissions));
-        $one = Permission::where('status', 1)
-            ->whereIn('permission', $permissions)
-            ->get([
-                'id',
-                'title',
-                'status',
-                '_lft',
-                '_rgt',
-                'permission',
-            ]);
         $all = Permission::where('status', 1)
             ->get([
                 'id',
                 'title',
-                'status',
                 'parent_id',
+                'icon',
                 '_lft',
                 '_rgt',
             ])
             ->toTree();
-        $this->buildMenu($all);
+        $this->treeFormat($all);
         return $this->success('success', $all);
     }
 
-    public function buildMenu($menus)
+    public function treeFormat($obj)
     {
-        foreach ($menus as $menu)
+        foreach ($obj as $v)
         {
-            unset($menu->parent_id);
-            unset($menu->_lft);
-            unset($menu->_rgt);
-            if (count($menu->children))
+            unset($v->parent_id);
+            unset($v->_lft);
+            unset($v->_rgt);
+            if (count($v->children))
             {
-                $this->buildMenu($menu->children);
+                $this->treeFormat($v->children);
             }
         }
     }
