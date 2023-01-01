@@ -84,7 +84,7 @@ class AdminController extends Controller
         $credentials = request(['username', 'password']);
         if (!$token = auth('admin')->setTTL(9999999999)->attempt($credentials))
         {
-            return $this->fails(401, 'Username or password is wrong!');
+            return $this->fails('Username or password is wrong!');
         }
         $user = auth('admin')->user();
         $roles = Enforcer::getRolesForUser($user->id);

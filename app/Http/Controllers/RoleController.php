@@ -25,7 +25,7 @@ class RoleController extends Controller
         {
             return $this->fails($validator->errors());
         }
-        $query = new Role();
+        $query = Role::query();
         if ($request->filled('name'))
         {
             $query->where('name', 'like', '%' . $request->name . '%');
@@ -50,7 +50,8 @@ class RoleController extends Controller
                 'status',
                 'created_at',
             ]);
-        foreach ($roles as $role) {
+        foreach ($roles as $role)
+        {
             $permissions = Enforcer::getPermissionsForUser($role->value);
             $p_ids = Permission::whereIn('permission', array_column($permissions, 2))->pluck('id');
             $role->permissions = $p_ids;
@@ -67,6 +68,7 @@ class RoleController extends Controller
             'value' => 'required|string',
             'desc' => 'nullable|string',
             'status' => 'required|integer',
+            'permissions' => 'required|array',
         ]);
         if ($validator->fails())
         {
@@ -77,12 +79,54 @@ class RoleController extends Controller
         {
             return $this->fails('角色不存在');
         }
-        $role->name = $request->name;
-        $role->value = $request->value;
-        $role->desc = $request->desc;
+        DB::beginTransaction();
+        try
+        {
+            // 删除角色所有权限
+            Enforcer::deletePermissionsForUser($request->value);
+            // 添加角色权限
+            $permissions = Permission::whereIn('id', $request->permissions)
+                ->get([
+                'id',
+                'path'
+            ]);
+            foreach ($permissions as $permission)
+            {
+                Enforcer::addPermissionForUser($request->value, '', $permission->path);
+            }
+            $role->name = $request->name;
+            $role->value = $request->value;
+            $role->desc = $request->desc;
+            $role->status = $request->status;
+            $role->save();
+            DB::commit();
+        }
+        catch (\Throwable $th)
+        {
+            DB::rollBack();
+            return $this->fails('更新失败');
+        }
+        return $this->success('更新成功', []);
+    }
+
+    public function setStatus(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+            'status' => 'required|integer',
+        ]);
+        if ($validator->fails())
+        {
+            return $this->fails($validator->errors());
+        }
+        $role = Role::find($request->id);
+        if (!$role)
+        {
+            return $this->fails('设置失败, 角色不存在');
+        }
         $role->status = $request->status;
         $role->save();
-        return $this->success('success', []);
+        return $this->success('设置成功', []);
     }
 
     public function create(Request $request)
@@ -97,13 +141,36 @@ class RoleController extends Controller
         {
             return $this->fails($validator->errors());
         }
-        $role = new Role();
-        $role->name = $request->name;
-        $role->value = $request->value;
-        $role->desc = $request->desc;
-        $role->status = $request->status;
-        $role->save();
-        return $this->success('success', []);
+        DB::beginTransaction();
+        try
+        {
+            // 添加角色
+            Enforcer::addRoleForUser($request->value, $request->value);
+            // 添加角色权限
+            $permissions = Permission::whereIn('id', $request->permissions)
+                ->get([
+                'id',
+                'path'
+            ]);
+            foreach ($permissions as $permission)
+            {
+                Enforcer::addPermissionForUser($request->value, '', $permission->path);
+            }
+            $role = new Role();
+            $role->name = $request->name;
+            $role->value = $request->value;
+            $role->desc = $request->desc;
+            $role->status = $request->status;
+            $role->save();
+            DB::commit();
+        }
+        catch (\Throwable $th)
+        {
+            DB::rollBack();
+            return $this->fails('添加失败');
+        }
+        
+        return $this->success('添加成功');
     }
 
     public function delete(Request $request)
