@@ -68,7 +68,7 @@ class RoleController extends Controller
             'value' => 'required|string',
             'desc' => 'nullable|string',
             'status' => 'required|integer',
-            'permissions' => 'required|array',
+            'permissions' => 'array',
         ]);
         if ($validator->fails())
         {
@@ -77,7 +77,7 @@ class RoleController extends Controller
         $role = Role::find($request->id);
         if (!$role)
         {
-            return $this->fails('角色不存在');
+            return $this->fails('更新失败, 角色不存在');
         }
         DB::beginTransaction();
         try
@@ -88,11 +88,11 @@ class RoleController extends Controller
             $permissions = Permission::whereIn('id', $request->permissions)
                 ->get([
                 'id',
-                'path'
+                'permission'
             ]);
             foreach ($permissions as $permission)
             {
-                Enforcer::addPermissionForUser($request->value, '', $permission->path);
+                Enforcer::addPermissionForUser($request->value, '', $permission->permission);
             }
             $role->name = $request->name;
             $role->value = $request->value;
@@ -150,11 +150,11 @@ class RoleController extends Controller
             $permissions = Permission::whereIn('id', $request->permissions)
                 ->get([
                 'id',
-                'path'
+                'permission'
             ]);
             foreach ($permissions as $permission)
             {
-                Enforcer::addPermissionForUser($request->value, '', $permission->path);
+                Enforcer::addPermissionForUser($request->value, '', $permission->permission);
             }
             $role = new Role();
             $role->name = $request->name;
@@ -183,12 +183,19 @@ class RoleController extends Controller
             return $this->fails($validator->errors());
         }
         $role = Role::find($request->id);
-        if (!$role)
+        DB::beginTransaction();
+        try
         {
-            return $this->fails('角色不存在');
+            $role->delete();
+            Enforcer::deleteRole($role->value);
+            DB::commit();
         }
-        $role->delete();
-        return $this->success('删除成功', []);
+        catch (\Exception $e)
+        {
+            DB::rollBack();
+            return $this->fails('删除失败');
+        }
+        return $this->success('删除成功');
     }
 
     public function getPermission(Request $request)

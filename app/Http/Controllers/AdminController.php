@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
 use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Support\Facades\Validator;
 use Lauthz\Facades\Enforcer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use stdClass;
 
 class AdminController extends Controller
@@ -117,5 +119,158 @@ class AdminController extends Controller
             ->get(['name', 'value',]);
         $user->role = $roles->toArray();
         return $this->success('success', $user);
+    }
+
+    public function index(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'page' => 'required|integer',
+            'limit' => 'required|integer',
+            'username' => 'nullable|string',
+            'name' => 'nullable|string',
+            'phone' => 'nullable|string',
+            'status' => 'nullable|integer',
+        ]);
+        if ($validator->fails())
+        {
+            return $this->fails($validator->errors());
+        }
+        $query = Admin::query();
+        if ($request->filled('username'))
+        {
+            $query->where('username', 'like', '%' . $request->input('username') . '%');
+        }
+        if ($request->filled('name'))
+        {
+            $query->where('name', 'like', '%' . $request->input('name') . '%');
+        }
+        if ($request->filled('phone'))
+        {
+            $query->where('phone', 'like', '%' . $request->input('phone') . '%');
+        }
+        if ($request->filled('status'))
+        {
+            $query->where('status', $request->input('status'));
+        }
+        $result = new StdClass();
+        $result->total = $query->count();
+        $result->items = $query->offset(($request->input('page') - 1) * $request->input('limit'))
+            ->limit($request->input('limit'))
+            ->get();
+        return $this->success('success', $result);
+    }
+
+    public function create(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string|unique:admins',
+            'password' => 'required|string',
+            'gender' => 'nullable|integer',
+            'avatar' => 'nullable|string',
+            'name' => 'nullable|string',
+            'phone' => 'nullable|string',
+            'email' => 'nullable|email',
+            'status' => 'nullable|integer',
+            'birthday' => 'nullable|date',
+            'roles' => 'nullable|array',
+        ]);
+        if ($validator->fails())
+        {
+            return $this->fails($validator->errors());
+        }
+        $admin = new Admin();
+        DB::beginTransaction();
+        try
+        {
+            $admin->username = $request->input('username');
+            $admin->password = bcrypt($request->input('password'));
+            $admin->gender = $request->gender;
+            $admin->birthday = $request->birthday;
+            $admin->avatar = $request->input('avatar');
+            $admin->name = $request->input('name');
+            $admin->phone = $request->input('phone');
+            $admin->email = $request->input('email');
+            $admin->status = $request->input('status');
+            $admin->save();
+            foreach ($request->input('roles') as $role)
+            {
+                Enforcer::addRoleForUser($admin->id, $role);
+            }
+            DB::commit();
+        }
+        catch (\Exception $e)
+        {
+            DB::rollBack();
+            return $this->fails('添加失败');
+        }
+        return $this->success('添加成功');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string|unique:admins',
+            'password' => 'required|string',
+            'gender' => 'nullable|integer',
+            'avatar' => 'nullable|string',
+            'name' => 'nullable|string',
+            'phone' => 'nullable|string',
+            'email' => 'nullable|email',
+            'status' => 'nullable|integer',
+            'birthday' => 'nullable|date',
+            'roles' => 'nullable|array',
+        ]);
+        if ($validator->fails())
+        {
+            return $this->fails($validator->errors());
+        }
+        $admin = Admin::find($id);
+        DB::beginTransaction();
+        try
+        {
+            $admin->username = $request->input('username');
+            $admin->password = bcrypt($request->input('password'));
+            $admin->gender = $request->gender;
+            $admin->birthday = $request->birthday;
+            $admin->avatar = $request->input('avatar');
+            $admin->name = $request->input('name');
+            $admin->phone = $request->input('phone');
+            $admin->email = $request->input('email');
+            $admin->status = $request->input('status');
+            $admin->save();
+            foreach ($request->input('roles') as $role)
+            {
+                Enforcer::addRoleForUser($admin->id, $role);
+            }
+            DB::commit();
+        }
+        catch (\Exception $e)
+        {
+            DB::rollBack();
+            return $this->fails('修改失败');
+        }
+        return $this->success('修改成功');
+    }
+
+    public function delete($id)
+    {
+        $admin = Admin::find($id);
+        if (!$admin)
+        {
+            return $this->fails('用户不存在');
+        }
+        DB::beginTransaction();
+        try
+        {
+            $admin->delete();
+            Enforcer::deleteRolesForUser($admin->id);
+            DB::commit();
+        }
+        catch (\Exception $e)
+        {
+            DB::rollBack();
+            return $this->fails('删除失败');
+        }
+        return $this->success('删除成功');
     }
 }

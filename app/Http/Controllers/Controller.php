@@ -12,7 +12,7 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    public function fails($message, int $code = 400)
+    public function fails(string $message, int $code = 400)
     {
         return response()->json([
             'code' =>$code,
