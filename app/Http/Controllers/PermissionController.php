@@ -28,18 +28,54 @@ class PermissionController extends Controller
         {
             $query->where('status', $request->status);
         }
-        $result = new stdClass();
-        $result->items = $query->get([
+        $result = $query->get([
                 'id',
                 'title',
                 'icon',
                 'component',
                 'permission',
                 'sort',
+                'type',
                 'status',
                 'created_at',
-            ]);
+                'parent_id',
+                '_lft',
+                '_rgt',
+            ])
+            ->toTree();
+        $this->treeFormat($result);
         return $this->success('success', $result);
+    }
+
+
+    public function getTree()
+    {
+        $all = Permission::where('status', 1)
+            ->get([
+                'id',
+                'title',
+                'parent_id',
+                'icon',
+                '_lft',
+                '_rgt',
+            ])
+            ->toTree();
+        $this->treeFormat($all);
+        return $this->success('success', $all);
+    }
+
+    public function treeFormat($obj)
+    {
+        foreach ($obj as $v)
+        {
+            unset($v->parent_id);
+            unset($v->_lft);
+            unset($v->_rgt);
+            if (count($v->children))
+            {
+                $this->treeFormat($v->children);
+            }
+        }
     }
 
     public function update(Request $request)

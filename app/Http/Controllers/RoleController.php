@@ -197,34 +197,4 @@ class RoleController extends Controller
         }
         return $this->success('删除成功');
     }
-
-    public function getPermission(Request $request)
-    {
-        $all = Permission::where('status', 1)
-            ->get([
-                'id',
-                'title',
-                'parent_id',
-                'icon',
-                '_lft',
-                '_rgt',
-            ])
-            ->toTree();
-        $this->treeFormat($all);
-        return $this->success('success', $all);
-    }
-
-    public function treeFormat($obj)
-    {
-        foreach ($obj as $v)
-        {
-            unset($v->parent_id);
-            unset($v->_lft);
-            unset($v->_rgt);
-            if (count($v->children))
-            {
-                $this->treeFormat($v->children);
-            }
-        }
-    }
 }
