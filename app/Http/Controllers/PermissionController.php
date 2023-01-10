@@ -30,15 +30,19 @@ class PermissionController extends Controller
         }
         $result = $query->get([
                 'id',
+                'parent_id',
                 'title',
+                'name',
+                'path',
+                'redirect',
                 'icon',
                 'component',
                 'permission',
+                'affix',
                 'sort',
                 'type',
                 'status',
                 'created_at',
-                'parent_id',
                 '_lft',
                 '_rgt',
             ])
@@ -46,7 +50,6 @@ class PermissionController extends Controller
         $this->treeFormat($result);
         return $this->success('success', $result);
     }
-
 
     public function getTree()
     {
@@ -68,7 +71,6 @@ class PermissionController extends Controller
     {
         foreach ($obj as $v)
         {
-            unset($v->parent_id);
             unset($v->_lft);
             unset($v->_rgt);
             if (count($v->children))
@@ -88,7 +90,7 @@ class PermissionController extends Controller
             'redirect' => 'nullable|string',
             'icon' => 'nullable|string',
             'component' => 'nullable|string',
-            'permission' => 'required|string|unique:permissions',
+            'permission' => 'required|string',
             'affix' => 'nullable|integer',
             'sort' => 'nullable|integer',
             'status' => 'nullable|integer',
@@ -98,22 +100,61 @@ class PermissionController extends Controller
         {
             return $this->fails($validator->errors());
         }
+        $permission = Permission::where('permission', $request->permission)
+            ->where('id', '<>', $request->id)
+            ->first();
+        if ($permission)
+        {
+            return $this->fails('permission already exists');
+        }
         $permission = Permission::find($request->id);
         if (!$permission)
         {
             return $this->fails('permission not found');
         }
-        $permission->parent_id = $request->parent_id;
+        if ($request->filled('parent_id'))
+        {
+            $parent = Permission::find($request->parent_id);
+            if (!$parent)
+            {
+                return $this->fails('parent not found');
+            }
+            $permission->parent_id = $request->parent_id;
+        }
         $permission->title = $request->title;
-        $permission->name = $request->name;
-        $permission->redirect = $request->redirect;
-        $permission->icon = $request->icon;
-        $permission->component = $request->component;
+        if ($request->filled('name'))
+        {
+            $permission->name = $request->name;
+        }
+        if ($request->filled('redirect'))
+        {
+            $permission->redirect;
+        }
+        if ($request->filled('icon'))
+        {
+            $permission->icon = $request->icon;
+        }
+        if ($request->filled('component'))
+        {
+            $permission->component = $request->component;
+        }
         $permission->permission = $request->permission;
-        $permission->affix = $request->affix;
-        $permission->sort = $request->sort;
-        $permission->status = $request->status;
-        $permission->type = $request->type;
+        if ($request->filled('affix'))
+        {
+            $permission->affix = $request->affix;
+        }
+        if ($request->filled('sort'))
+        {
+            $permission->sort = $request->sort;
+        }
+        if ($request->filled('status'))
+        {
+            $permission->status = $request->status;
+        }
+        if ($request->filled('type'))
+        {
+            $permission->type = $request->type;
+        }
         $permission->save();
         return $this->success('success');
     }
@@ -138,17 +179,49 @@ class PermissionController extends Controller
             return $this->fails($validator->errors());
         }
         $permission = new Permission();
-        $permission->parent_id = $request->parent_id;
+        if ($request->filled('parent_id'))
+        {
+            $parent = Permission::find($request->parent_id);
+            if (!$parent)
+            {
+                return $this->fails('parent not found');
+            }
+            $permission->parent_id = $request->parent_id;
+        }
         $permission->title = $request->title;
-        $permission->name = $request->name;
-        $permission->redirect = $request->redirect;
-        $permission->icon = $request->icon;
-        $permission->component = $request->component;
+        if ($request->filled('name'))
+        {
+            $permission->name = $request->name;
+        }
+        if ($request->filled('redirect'))
+        {
+            $permission->redirect;
+        }
+        if ($request->filled('icon'))
+        {
+            $permission->icon = $request->icon;
+        }
+        if ($request->filled('component'))
+        {
+            $permission->component = $request->component;
+        }
         $permission->permission = $request->permission;
-        $permission->affix = $request->affix;
-        $permission->sort = $request->sort;
-        $permission->status = $request->status;
-        $permission->type = $request->type;
+        if ($request->filled('affix'))
+        {
+            $permission->affix = $request->affix;
+        }
+        if ($request->filled('sort'))
+        {
+            $permission->sort = $request->sort;
+        }
+        if ($request->filled('status'))
+        {
+            $permission->status = $request->status;
+        }
+        if ($request->filled('type'))
+        {
+            $permission->type = $request->type;
+        }
         $permission->save();
         return $this->success('success');
     }
