@@ -20,11 +20,13 @@ return new class extends Migration
             $table->string('avatar')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
-            $table->string('email_status')->nullable();
             $table->string('name')->nullable();
-            $table->dateTime('birthday')->nullable();
             $table->string('last_ip')->nullable();
+            $table->dateTime('birthday')->nullable();
             $table->dateTime('last_time')->nullable();
+            $table->unsignedTinyInteger('email_status')->default(0);
+            $table->unsignedTinyInteger('gender')->default(0);
+            $table->unsignedTinyInteger('status')->default(1);
             $table->dateTime('created_at')->nullable();
             $table->dateTime('updated_at')->nullable();
         });

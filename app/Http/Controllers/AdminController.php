@@ -89,6 +89,10 @@ class AdminController extends Controller
             return $this->fails('Username or password is wrong!');
         }
         $user = auth('admin')->user();
+        if ($user->status == 0)
+        {
+            return $this->fails('The account has been disabled!');
+        }
         $roles = Enforcer::getRolesForUser($user->id);
         $roles = Role::where('status', 1)
             ->whereIn('value', $roles)
@@ -125,7 +129,7 @@ class AdminController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'page' => 'required|integer',
-            'limit' => 'required|integer',
+            'pageSize' => 'required|integer',
             'username' => 'nullable|string',
             'name' => 'nullable|string',
             'phone' => 'nullable|string',
@@ -154,8 +158,8 @@ class AdminController extends Controller
         }
         $result = new StdClass();
         $result->total = $query->count();
-        $result->items = $query->offset(($request->input('page') - 1) * $request->input('limit'))
-            ->limit($request->input('limit'))
+        $result->items = $query->offset(($request->input('page') - 1) * $request->input('pageSize'))
+            ->limit($request->input('pageSize'))
             ->get();
         return $this->success('success', $result);
     }
@@ -209,13 +213,15 @@ class AdminController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'username' => 'required|string|unique:admins',
-            'password' => 'required|string',
+            'id' => 'required|integer',
+            'username' => 'required|string',
+            'password' => 'nullable|string',
             'gender' => 'nullable|integer',
             'avatar' => 'nullable|string',
             'name' => 'nullable|string',
             'phone' => 'nullable|string',
             'email' => 'nullable|email',
+            'email_status' => 'nullable|integer',
             'status' => 'nullable|integer',
             'birthday' => 'nullable|date',
             'roles' => 'nullable|array',
@@ -224,19 +230,44 @@ class AdminController extends Controller
         {
             return $this->fails($validator->errors());
         }
+        $admin = Admin::where('username', $request->input('username'))
+            ->where('id', '<>', $id)
+            ->first();
+        if ($admin) {
+            return $this->fails('用户名已存在');
+        }
         $admin = Admin::find($id);
         DB::beginTransaction();
         try
         {
             $admin->username = $request->input('username');
-            $admin->password = bcrypt($request->input('password'));
-            $admin->gender = $request->gender;
-            $admin->birthday = $request->birthday;
-            $admin->avatar = $request->input('avatar');
-            $admin->name = $request->input('name');
-            $admin->phone = $request->input('phone');
-            $admin->email = $request->input('email');
-            $admin->status = $request->input('status');
+            if($request->filled('password')){
+                $admin->password = bcrypt($request->input('password'));
+            }
+            if ($request->filled('gender')) {
+                $admin->gender = $request->gender;
+            }
+            if ($request->filled('birthday')) {
+                $admin->birthday = $request->birthday;
+            }
+            if ($request->filled('avatar')) {
+                $admin->avatar = $request->input('avatar');
+            }
+            if ($request->filled('name')) {
+                $admin->name = $request->input('name');
+            }
+            if ($request->filled('phone')) {
+                $admin->phone = $request->input('phone');
+            }
+            if ($request->filled('email')) {
+                $admin->email = $request->input('email');
+            }
+            if($request->filled('email_status')){
+                $admin->email_status = $request->input('email_status');
+            }
+            if ($request->filled('status')) {
+                $admin->status = $request->input('status');
+            }
             $admin->save();
             foreach ($request->input('roles') as $role)
             {

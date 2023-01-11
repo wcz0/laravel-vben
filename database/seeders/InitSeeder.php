@@ -269,12 +269,20 @@ class InitSeeder extends Seeder
             'username' => 'root',
             'password' => bcrypt('root'),
             'name' => '超级管理员',
+            'phone' => '138888888888',
+            'email' => 'qq@qq.com',
+            'gender' => 1,
+            'birthday' => fake()->date(),
         ]);
         $user = Admin::create([
             'id' => app('snowflake')->id(),
             'username' => 'user',
             'password' => bcrypt('root'),
             'name' => '李四',
+            'gender' => 2,
+            'phone' => '138888888888',
+            'email' => '132@qq.com',
+            'birthday' => fake()->date(),
         ]);
         Enforcer::addRoleForUser($admin->id, 'root');
         Enforcer::addRoleForUser($user->id, 'admin');
