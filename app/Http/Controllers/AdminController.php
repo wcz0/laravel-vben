@@ -195,6 +195,7 @@ class AdminController extends Controller
         DB::beginTransaction();
         try
         {
+            $admin->id = app('snowflake')->id();
             $admin->username = $request->input('username');
             $admin->password = bcrypt($request->input('password'));
             if($request->filled('gender')){
@@ -239,7 +240,7 @@ class AdminController extends Controller
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id' => 'required|integer',
+            'id' => 'required',
             'username' => 'required|string',
             'password' => 'nullable|string',
             'gender' => 'nullable|integer',
@@ -256,8 +257,8 @@ class AdminController extends Controller
         {
             return $this->fails($validator->errors());
         }
-        $admin = Admin::where('username', $request->input('username'))
-            ->where('id', '<>', $request->id)
+        $admin = Admin::where('username', $request->username)
+            ->where('id', '!=', $request->id)
             ->first();
         if ($admin) {
             return $this->fails('用户名已存在');
