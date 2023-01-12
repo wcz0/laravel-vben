@@ -1,0 +1,3 @@
+[submodule "laravel-vben-admin"]
+	path = laravel-vben-admin
+	url = https://github.com/wcz0/laravel-vben-admin
