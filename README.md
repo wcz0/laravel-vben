@@ -6,10 +6,14 @@
 
 使用包
 
-- jwt-auth 作为用户验证
-- casbin(laravel-authz) 作为权限管理
-- nestedset 无限级分类
-- 
+- casbin 鉴权 [https://github.com/php-casbin/laravel-authz](https://github.com/php-casbin/laravel-authz)
+- jwt 用户验证 [https://github.com/tymondesigns/jwt-auth](https://github.com/tymondesigns/jwt-auth)
+- 雪花id [https://github.com/godruoyi/php-snowflake](https://github.com/godruoyi/php-snowflake)
+- 无限级分类 [https://github.com/lazychaser/laravel-nestedset](https://github.com/lazychaser/laravel-nestedset)
+
+ER 图查看 ./laravel-vben ER.drawio
+
+Apifox 在线地址 [https://www.apifox.cn/apidoc/shared-39d721f7-b20b-4b27-8f1e-7666469da059](https://www.apifox.cn/apidoc/shared-39d721f7-b20b-4b27-8f1e-7666469da059)
 
 ## 运行项目
 
@@ -38,7 +42,3 @@ pnpm dev
 ### Todo:
 
 ### BUGs:
-
-* ~~权限不能排序~~
-* xdebug失效
-*
