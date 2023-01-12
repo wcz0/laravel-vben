@@ -197,4 +197,14 @@ class RoleController extends Controller
         }
         return $this->success('删除成功');
     }
+
+    public function getRoles()
+    {
+        $roles = Role::where('status', 1)
+            ->get([
+                'name',
+                'value',
+            ]);
+        return $this->success('success', $roles);
+    }
 }

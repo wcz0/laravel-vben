@@ -133,6 +133,7 @@ class AdminController extends Controller
             'username' => 'nullable|string',
             'name' => 'nullable|string',
             'phone' => 'nullable|string',
+            'gender' => 'nullable|integer',
             'status' => 'nullable|integer',
         ]);
         if ($validator->fails())
@@ -152,15 +153,22 @@ class AdminController extends Controller
         {
             $query->where('phone', 'like', '%' . $request->input('phone') . '%');
         }
+        if ($request->filled('gender')){
+            $query->where('gender', $request->gender);
+        }
         if ($request->filled('status'))
         {
             $query->where('status', $request->input('status'));
         }
         $result = new StdClass();
         $result->total = $query->count();
-        $result->items = $query->offset(($request->input('page') - 1) * $request->input('pageSize'))
+        $items = $query->offset(($request->input('page') - 1) * $request->input('pageSize'))
             ->limit($request->input('pageSize'))
             ->get();
+        foreach ($items as $v) {
+            $v->roles = Enforcer::getRolesForUser($v->id);
+        }
+        $result->items = $items;
         return $this->success('success', $result);
     }
 
@@ -174,6 +182,7 @@ class AdminController extends Controller
             'name' => 'nullable|string',
             'phone' => 'nullable|string',
             'email' => 'nullable|email',
+            'email_status' => 'nullable|integer',
             'status' => 'nullable|integer',
             'birthday' => 'nullable|date',
             'roles' => 'nullable|array',
@@ -188,13 +197,30 @@ class AdminController extends Controller
         {
             $admin->username = $request->input('username');
             $admin->password = bcrypt($request->input('password'));
-            $admin->gender = $request->gender;
-            $admin->birthday = $request->birthday;
-            $admin->avatar = $request->input('avatar');
-            $admin->name = $request->input('name');
-            $admin->phone = $request->input('phone');
-            $admin->email = $request->input('email');
-            $admin->status = $request->input('status');
+            if($request->filled('gender')){
+                $admin->gender = $request->gender;
+            }
+            if($request->filled('birthday')){
+                $admin->birthday = $request->birthday;
+            }
+            if($request->filled('avatar')){
+                $admin->avatar = $request->avatar;
+            }
+            if($request->filled('name')){
+                $admin->name = $request->name;
+            }
+            if($request->filled('phone')){
+                $admin->phone = $request->phone;
+            }
+            if($request->filled('email')){
+                $admin->email = $request->email;
+            }
+            if($request->filled('email_status')){
+                $admin->email_status = $request->email_status;
+            }
+            if($request->filled('status')){
+                $admin->status = $request->status;
+            }
             $admin->save();
             foreach ($request->input('roles') as $role)
             {
@@ -210,7 +236,7 @@ class AdminController extends Controller
         return $this->success('添加成功');
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'id' => 'required|integer',
@@ -231,12 +257,12 @@ class AdminController extends Controller
             return $this->fails($validator->errors());
         }
         $admin = Admin::where('username', $request->input('username'))
-            ->where('id', '<>', $id)
+            ->where('id', '<>', $request->id)
             ->first();
         if ($admin) {
             return $this->fails('用户名已存在');
         }
-        $admin = Admin::find($id);
+        $admin = Admin::find($request->id);
         DB::beginTransaction();
         try
         {
@@ -283,9 +309,16 @@ class AdminController extends Controller
         return $this->success('修改成功');
     }
 
-    public function delete($id)
+    public function delete(Request $request)
     {
-        $admin = Admin::find($id);
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+        ]);
+        if ($validator->fails())
+        {
+            return $this->fails($validator->errors());
+        }
+        $admin = Admin::find($request->input('id'));
         if (!$admin)
         {
             return $this->fails('用户不存在');

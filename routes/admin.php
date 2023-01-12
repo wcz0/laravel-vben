@@ -28,6 +28,7 @@ Route::group(['middleware' => [
     Route::put('/system/role/set-status', [RoleController::class, 'setStatus']);
     Route::post('/system/role/create', [RoleController::class, 'create']);
     Route::delete('/system/role/delete', [RoleController::class, 'delete']);
+    Route::get('/system/role/get-roles', [RoleController::class, 'getRoles']);
     // 权限相关
     Route::get('/system/permission/index', [PermissionController::class, 'index']);
     Route::put('/system/permission/update', [PermissionController::class, 'update']);
