@@ -11,6 +11,7 @@ class Permission extends Model
     use HasFactory, NodeTrait;
 
     protected $casts = [
+        'id' => 'string',
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
