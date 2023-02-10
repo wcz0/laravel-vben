@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -25,6 +26,17 @@ class UserController extends Controller
 
     public function register(Request $request)
     {
-        # code...
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|unique:users',
+            'password' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return $this->fails($validator->errors());
+        }
+        $user = new User();
+        $user->username = $request->username;
+        $user->password = bcrypt($request->password);
+        $user->save();
+        return $this->success('success');
     }
 }

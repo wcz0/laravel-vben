@@ -18,7 +18,7 @@ class AppServiceProvider extends ServiceProvider
         //
         $this->app->singleton('snowflake', function($app){
             return (new Snowflake)
-                ->setStartTimeStamp(strtotime(config('snowflake.start_time'))*1000)
+                ->setStartTimeStamp(strtotime(config('snowflake.start_time'))*1000)             // 设置起始时间戳   `   `
                 ->setSequenceResolver(new LaravelSequenceResolver($app->get('cache.store')));
         });
     }
