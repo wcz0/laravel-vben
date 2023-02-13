@@ -145,7 +145,7 @@ class RoleController extends Controller
         try
         {
             // 添加角色
-            Enforcer::addRoleForUser($request->value, $request->value);
+            Enforcer::addRoleForUser($request->name, $request->value);
             // 添加角色权限
             $permissions = Permission::whereIn('id', $request->permissions)
                 ->get([

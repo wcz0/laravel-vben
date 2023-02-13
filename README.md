@@ -42,3 +42,5 @@ pnpm dev
 ### Todo:
 
 ### BUGs:
+
+- 初始化数据不正确, 缺少system 缺少index权限
