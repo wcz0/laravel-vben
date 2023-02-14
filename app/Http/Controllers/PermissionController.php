@@ -89,6 +89,7 @@ class PermissionController extends Controller
             'name' => 'nullable|string',
             'redirect' => 'nullable|string',
             'icon' => 'nullable|string',
+            'path' => 'nullable|string',
             'component' => 'nullable|string',
             'permission' => 'required|string',
             'affix' => 'nullable|integer',
@@ -134,6 +135,10 @@ class PermissionController extends Controller
         {
             $permission->icon = $request->icon;
         }
+        if ($request->filled('path'))
+        {
+            $permission->path = $request->path;
+        }
         if ($request->filled('component'))
         {
             $permission->component = $request->component;
@@ -168,6 +173,7 @@ class PermissionController extends Controller
             'redirect' => 'nullable|string',
             'icon' => 'nullable|string',
             'component' => 'nullable|string',
+            'path' => 'nullable|string',
             'permission' => 'required|string|unique:permissions',
             'affix' => 'nullable|integer',
             'sort' => 'nullable|integer',
@@ -200,6 +206,10 @@ class PermissionController extends Controller
         if ($request->filled('icon'))
         {
             $permission->icon = $request->icon;
+        }
+        if ($request->filled('path'))
+        {
+            $permission->path = $request->path;
         }
         if ($request->filled('component'))
         {
