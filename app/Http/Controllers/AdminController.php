@@ -36,7 +36,7 @@ class AdminController extends Controller
                 'title',
                 'affix',
                 'icon',
-                'sort',
+                'sort as orderNo',
                 '_lft',
                 '_rgt',
                 'permission',
@@ -58,7 +58,7 @@ class AdminController extends Controller
                 'title' => $menu->title,
                 'icon' => $menu->icon,
                 'affix' => $menu->affix == 1 ? true : false,
-                'sort' => $menu->sort,
+                'orderNo' => $menu->orderNo,
             ];
             unset($menu->parent_id);
             unset($menu->_lft);
