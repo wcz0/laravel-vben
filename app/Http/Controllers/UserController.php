@@ -24,6 +24,7 @@ class UserController extends Controller
         return $this->success('success', $token);
     }
 
+
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [

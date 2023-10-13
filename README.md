@@ -41,6 +41,10 @@ pnpm dev
 
 ### Todo:
 
+操作卸载service层
+
+er实体关系图 转移到 Confluence 上
+
 ### BUGs:
 
 - 初始化数据不正确, 缺少system 缺少index权限
