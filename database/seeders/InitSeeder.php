@@ -232,34 +232,14 @@ class InitSeeder extends Seeder
             ],
         ]);
 
-        Enforcer::addPermissionForUser('root', '', '/dashboard');
-        Enforcer::addPermissionForUser('root', '', '/dashboard/workbench');
-        Enforcer::addPermissionForUser('root', '', '/dashboard/analysis');
-        Enforcer::addPermissionForUser('root', '', '/modify');
-        Enforcer::addPermissionForUser('root', '', '/modify/index');
-        Enforcer::addPermissionForUser('root', '', '/modify/password');
-        Enforcer::addPermissionForUser('root', '', '/system');
-        Enforcer::addPermissionForUser('root', '', '/system/permission');
-        Enforcer::addPermissionForUser('root', '', '/system/permission/create');
-        Enforcer::addPermissionForUser('root', '', '/system/permission/update');
-        Enforcer::addPermissionForUser('root', '', '/system/permission/delete');
-        Enforcer::addPermissionForUser('root', '', '/system/role');
-        Enforcer::addPermissionForUser('root', '', '/system/role/create');
-        Enforcer::addPermissionForUser('root', '', '/system/role/update');
-        Enforcer::addPermissionForUser('root', '', '/system/role/delete');
-        Enforcer::addPermissionForUser('root', '', '/system/admin');
-        Enforcer::addPermissionForUser('root', '', '/system/admin/create');
-        Enforcer::addPermissionForUser('root', '', '/system/admin/update');
-        Enforcer::addPermissionForUser('root', '', '/system/admin/delete');
-        Enforcer::addPermissionForUser('root', '', '/system/log');
+        Enforcer::addPermissionForUser('root', '*', '*');
 
-
-        Enforcer::addPermissionForUser('admin', '', '/dashboard');
-        Enforcer::addPermissionForUser('admin', '', '/dashboard/workbench');
-        Enforcer::addPermissionForUser('admin', '', '/dashboard/analysis');
-        Enforcer::addPermissionForUser('admin', '', '/modify');
-        Enforcer::addPermissionForUser('admin', '', '/modify/index');
-        Enforcer::addPermissionForUser('admin', '', '/modify/password');
+        Enforcer::addPermissionForUser('admin', '/dashboard', 'get');
+        Enforcer::addPermissionForUser('admin', '/dashboard/workbench', 'get');
+        Enforcer::addPermissionForUser('admin', '/dashboard/analysis', 'get');
+        Enforcer::addPermissionForUser('admin', '/modify', 'get');
+        Enforcer::addPermissionForUser('admin', '/modify/index', 'get');
+        Enforcer::addPermissionForUser('admin', '/modify/password', 'post');
     }
 
     public function admin()
